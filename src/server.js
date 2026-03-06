@@ -42,11 +42,16 @@ async function startServer() {
 
   // Connect to MongoDB
   try {
+    console.log(`Connecting to MongoDB at ${MONGO_URI.replace(/:(\/\/)(.*@)?/, "$1***@")}`);
     await mongoose.connect(MONGO_URI);
     console.log("Connected to MongoDB");
   } catch (err) {
-    console.error("MongoDB connection error:", err.message);
-    process.exit(1);
+    console.error("MongoDB connection error:", err);
+    if (process.env.NODE_ENV === "production") {
+      console.warn("Continuing without MongoDB connection (production mode).");
+    } else {
+      console.warn("Continuing without MongoDB connection (development mode).");
+    }
   }
 
   // Start server
